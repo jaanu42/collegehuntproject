@@ -14,7 +14,17 @@ import {
   Line,
   CartesianGrid,
 } from "recharts";
-import { MapPin, GraduationCap, Bookmark, ExternalLink, ArrowLeft } from "lucide-react";
+import {
+  MapPin,
+  GraduationCap,
+  Bookmark,
+  ExternalLink,
+  ArrowLeft,
+  TrendingUp,
+  Users,
+  Award,
+  CheckCircle2,
+} from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  SEEDED SUPPLEMENTARY DATA (keyed by college id)                    */
@@ -62,7 +72,6 @@ const YOY: Record<number, { year: string; avg: number }[]> = {
   ],
 };
 
-// Default YoY for colleges without specific data
 function getYoY(id: number, base: number) {
   if (YOY[id]) return YOY[id];
   return [
@@ -74,7 +83,6 @@ function getYoY(id: number, base: number) {
   ];
 }
 
-// Stream → cutoff percentile (for admission predictor)
 const CUTOFFS: Record<string, { jee?: number; neet?: number; cuet?: number; clat?: number }> = {
   Engineering: { jee: 95 },
   Medical: { neet: 99 },
@@ -146,38 +154,55 @@ function AdmissionPredictor({
   const gap = percentile - cutoff;
   const probability = Math.min(100, Math.max(0, 50 + gap * 5));
 
-  const color =
+  const barColor =
     probability >= 70
-      ? "bg-green-500"
+      ? "#22c55e"
       : probability >= 40
-      ? "bg-yellow-400"
-      : "bg-red-400";
+      ? "#f59e0b"
+      : "#FF385C";
 
   const label =
     probability >= 70 ? "Good chance" : probability >= 40 ? "Moderate chance" : "Low chance";
 
   const labelColor =
     probability >= 70
-      ? "text-green-700"
+      ? "#16a34a"
       : probability >= 40
-      ? "text-yellow-700"
-      : "text-red-600";
+      ? "#d97706"
+      : "#FF385C";
 
   return (
-    <div className="rounded-2xl border border-neutral-200 p-6">
-      <h3 className="text-base font-semibold text-neutral-900">
+    <div
+      style={{
+        borderRadius: "16px",
+        border: "1px solid #DDDDDD",
+        padding: "24px",
+        backgroundColor: "#FFFFFF",
+        boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+      }}
+    >
+      <h3
+        style={{
+          fontSize: "16px",
+          fontWeight: 600,
+          color: "#222222",
+          marginBottom: "6px",
+        }}
+      >
         Admission Predictor
       </h3>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p style={{ fontSize: "14px", color: "#717171", marginBottom: "24px" }}>
         Enter your {exam} percentile to see your chances at {collegeName}.
       </p>
 
-      <div className="mt-6">
-        <div className="flex justify-between mb-2">
-          <label className="text-sm font-medium text-neutral-700">
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+          <label style={{ fontSize: "14px", fontWeight: 500, color: "#222222" }}>
             Your {exam} Percentile
           </label>
-          <span className="text-sm font-bold text-blue-600">{percentile}</span>
+          <span style={{ fontSize: "14px", fontWeight: 700, color: "#FF385C" }}>
+            {percentile}
+          </span>
         </div>
         <input
           type="range"
@@ -186,45 +211,106 @@ function AdmissionPredictor({
           step={1}
           value={percentile}
           onChange={(e) => setPercentile(Number(e.target.value))}
-          className="w-full accent-blue-600"
+          style={{ width: "100%", accentColor: "#FF385C" }}
         />
-        <div className="flex justify-between text-xs text-neutral-400 mt-1">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: "12px",
+            color: "#717171",
+            marginTop: "4px",
+          }}
+        >
           <span>0</span>
           <span>100</span>
         </div>
       </div>
 
-      <div className="mt-6">
-        <div className="flex justify-between mb-2">
-          <span className="text-sm text-neutral-600">Admission Probability</span>
-          <span className={`text-sm font-semibold ${labelColor}`}>{label}</span>
+      <div style={{ marginTop: "24px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "8px",
+          }}
+        >
+          <span style={{ fontSize: "14px", color: "#717171" }}>Admission Probability</span>
+          <span style={{ fontSize: "14px", fontWeight: 600, color: labelColor }}>{label}</span>
         </div>
-        <div className="h-3 w-full rounded-full bg-neutral-100 overflow-hidden">
+        <div
+          style={{
+            height: "8px",
+            borderRadius: "100px",
+            backgroundColor: "#F7F7F7",
+            overflow: "hidden",
+          }}
+        >
           <div
-            className={`h-full rounded-full transition-all duration-300 ${color}`}
-            style={{ width: `${probability}%` }}
+            style={{
+              height: "100%",
+              borderRadius: "100px",
+              width: `${probability}%`,
+              backgroundColor: barColor,
+              transition: "width 0.3s ease",
+            }}
           />
         </div>
-        <div className="flex justify-between text-xs text-neutral-400 mt-1">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: "12px",
+            color: "#717171",
+            marginTop: "6px",
+          }}
+        >
           <span>{probability.toFixed(0)}% probability</span>
           <span>Cutoff ~{cutoff} percentile</span>
         </div>
       </div>
 
       {gap < 0 && (
-        <p className="mt-4 text-xs text-red-500">
-          You are {Math.abs(gap).toFixed(0)} percentile points below the typical cutoff. Consider
-          backup options or state quota.
+        <p
+          style={{
+            marginTop: "16px",
+            fontSize: "13px",
+            color: "#FF385C",
+            backgroundColor: "#FFF1F2",
+            borderRadius: "10px",
+            padding: "10px 14px",
+          }}
+        >
+          You are {Math.abs(gap).toFixed(0)} points below the typical cutoff. Consider backup
+          options or state quota.
         </p>
       )}
       {gap >= 0 && gap < 5 && (
-        <p className="mt-4 text-xs text-yellow-600">
-          You are near the cutoff. Consider applying but have backup options ready.
+        <p
+          style={{
+            marginTop: "16px",
+            fontSize: "13px",
+            color: "#d97706",
+            backgroundColor: "#fffbeb",
+            borderRadius: "10px",
+            padding: "10px 14px",
+          }}
+        >
+          You are near the cutoff. Apply but keep backup options ready.
         </p>
       )}
       {gap >= 5 && (
-        <p className="mt-4 text-xs text-green-600">
-          You are comfortably above the cutoff. You have a strong chance.
+        <p
+          style={{
+            marginTop: "16px",
+            fontSize: "13px",
+            color: "#16a34a",
+            backgroundColor: "#f0fdf4",
+            borderRadius: "10px",
+            padding: "10px 14px",
+          }}
+        >
+          You are comfortably above the cutoff — strong chance of admission!
         </p>
       )}
     </div>
@@ -276,10 +362,29 @@ export default function CollegeDetailPage() {
 
   if (!college) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-neutral-500">College not found.</p>
-          <a href="/" className="mt-4 inline-block text-sm text-blue-600 hover:underline">
+      <main
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#FFFFFF",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "#717171", fontSize: "15px" }}>College not found.</p>
+          <a
+            href="/"
+            style={{
+              display: "inline-block",
+              marginTop: "16px",
+              fontSize: "14px",
+              color: "#FF385C",
+              textDecoration: "none",
+              fontWeight: 500,
+            }}
+          >
             ← Back to search
           </a>
         </div>
@@ -292,68 +397,191 @@ export default function CollegeDetailPage() {
   const courses = COURSES[college.stream] ?? [];
   const feesBreakdown = FEES_BREAKDOWN[college.stream] ?? [];
 
+  /* Quick stat cards data */
+  const quickStats = [
+    {
+      icon: <TrendingUp size={18} color="#FF385C" />,
+      label: "Avg Placement",
+      value: `₹${college.placement} LPA`,
+    },
+    {
+      icon: <GraduationCap size={18} color="#FF385C" />,
+      label: "Annual Fees",
+      value: formatFees(college.fees),
+    },
+    {
+      icon: <Award size={18} color="#FF385C" />,
+      label: "NIRF Rank",
+      value: `#${college.nirf}`,
+    },
+    {
+      icon: <Users size={18} color="#FF385C" />,
+      label: "Type",
+      value: college.type,
+    },
+  ];
+
   return (
-    <main className="min-h-screen bg-white text-neutral-900">
-
-      {/* HERO */}
-      <section className="border-b border-neutral-200">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
-
+    <main
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#FFFFFF",
+        color: "#222222",
+        fontFamily: "'Circular', 'Circular Std', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      }}
+    >
+      {/* ── HERO ── */}
+      <section style={{ borderBottom: "1px solid #DDDDDD" }}>
+        <div
+          style={{
+            maxWidth: "1120px",
+            margin: "0 auto",
+            padding: "40px 24px 48px",
+          }}
+        >
+          {/* Back link */}
           <a
             href="/"
-            className="inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-800 transition-colors"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "14px",
+              color: "#717171",
+              textDecoration: "none",
+              fontWeight: 500,
+              transition: "color 0.2s ease",
+            }}
+            onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "#222222")}
+            onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "#717171")}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft size={15} />
             Back to search
           </a>
 
-          <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div>
+          {/* Hero content */}
+          <div
+            style={{
+              marginTop: "28px",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: "24px",
+            }}
+          >
+            {/* Left: name + badges */}
+            <div style={{ flex: "1 1 400px" }}>
               {/* Badges */}
-              <div className="flex flex-wrap gap-2 text-xs">
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700 font-medium">
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <span
+                  style={{
+                    borderRadius: "100px",
+                    backgroundColor: "#FFF1F2",
+                    color: "#FF385C",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    padding: "4px 12px",
+                  }}
+                >
                   NIRF #{college.nirf}
                 </span>
-                <span className="rounded-full bg-neutral-100 px-3 py-1 text-neutral-600">
+                <span
+                  style={{
+                    borderRadius: "100px",
+                    backgroundColor: "#F7F7F7",
+                    color: "#717171",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    padding: "4px 12px",
+                    border: "1px solid #DDDDDD",
+                  }}
+                >
                   {college.type}
                 </span>
-                <span className="rounded-full bg-neutral-100 px-3 py-1 text-neutral-600">
+                <span
+                  style={{
+                    borderRadius: "100px",
+                    backgroundColor: "#F7F7F7",
+                    color: "#717171",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    padding: "4px 12px",
+                    border: "1px solid #DDDDDD",
+                  }}
+                >
                   {college.stream}
                 </span>
-                <span className="rounded-full bg-green-50 px-3 py-1 text-green-700">
+                <span
+                  style={{
+                    borderRadius: "100px",
+                    backgroundColor: "#f0fdf4",
+                    color: "#16a34a",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    padding: "4px 12px",
+                  }}
+                >
                   NAAC A++
                 </span>
               </div>
 
-              {/* Name */}
-              <h1 className="mt-4 text-3xl font-bold tracking-tight lg:text-4xl">
+              {/* College name */}
+              <h1
+                style={{
+                  marginTop: "16px",
+                  fontSize: "clamp(28px, 4vw, 40px)",
+                  fontWeight: 700,
+                  letterSpacing: "-0.5px",
+                  color: "#222222",
+                  lineHeight: 1.2,
+                }}
+              >
                 {college.name}
               </h1>
 
-              {/* Meta */}
-              <div className="mt-3 flex flex-wrap gap-4 text-sm text-neutral-500">
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4" />
+              {/* Meta row */}
+              <div
+                style={{
+                  marginTop: "12px",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "16px",
+                  fontSize: "15px",
+                  color: "#717171",
+                }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <MapPin size={15} />
                   {college.city}
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <GraduationCap className="h-4 w-4" />
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <GraduationCap size={15} />
                   {formatFees(college.fees)} / year
                 </span>
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="flex gap-3 shrink-0">
+            {/* Right: CTAs */}
+            <div style={{ display: "flex", gap: "12px", flexShrink: 0, alignItems: "center" }}>
               <button
                 onClick={toggleShortlist}
-                className={`flex items-center gap-2 rounded-2xl border px-5 py-3 text-sm font-medium transition-colors ${
-                  shortlisted
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-neutral-300 text-neutral-700 hover:border-neutral-400"
-                }`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  borderRadius: "12px",
+                  border: shortlisted ? "1px solid #FF385C" : "1px solid #DDDDDD",
+                  backgroundColor: shortlisted ? "#FFF1F2" : "#FFFFFF",
+                  color: shortlisted ? "#FF385C" : "#222222",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  padding: "12px 20px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
               >
-                <Bookmark className="h-4 w-4" />
+                <Bookmark size={16} />
                 {shortlisted ? "Saved" : "Save"}
               </button>
 
@@ -361,118 +589,287 @@ export default function CollegeDetailPage() {
                 href={`https://www.google.com/search?q=${encodeURIComponent(college.name + " official website")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  borderRadius: "12px",
+                  backgroundColor: "#FF385C",
+                  color: "#FFFFFF",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  padding: "12px 20px",
+                  textDecoration: "none",
+                  transition: "background-color 0.2s ease",
+                }}
+                onMouseEnter={(e) =>
+                  ((e.currentTarget as HTMLElement).style.backgroundColor = "#E31C5F")
+                }
+                onMouseLeave={(e) =>
+                  ((e.currentTarget as HTMLElement).style.backgroundColor = "#FF385C")
+                }
               >
-                <ExternalLink className="h-4 w-4" />
-                Apply
+                <ExternalLink size={16} />
+                Apply Now
               </a>
             </div>
           </div>
 
-          {/* QUICK STATS */}
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {[
-              { label: "Avg Placement", value: `₹${college.placement} LPA` },
-              { label: "Annual Fees", value: formatFees(college.fees) },
-              { label: "NIRF Rank", value: `#${college.nirf}` },
-              { label: "Type", value: college.type },
-            ].map((s) => (
+          {/* ── QUICK STATS ── */}
+          <div
+            style={{
+              marginTop: "36px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {quickStats.map((s) => (
               <div
                 key={s.label}
-                className="rounded-2xl border border-neutral-200 px-5 py-4"
+                style={{
+                  borderRadius: "16px",
+                  border: "1px solid #DDDDDD",
+                  padding: "20px 24px",
+                  backgroundColor: "#FFFFFF",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  transition: "box-shadow 0.2s ease, transform 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 6px 16px rgba(0,0,0,0.12)";
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 2px 8px rgba(0,0,0,0.06)";
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                }}
               >
-                <p className="text-xs text-neutral-500">{s.label}</p>
-                <p className="mt-1 text-lg font-bold">{s.value}</p>
+                <div style={{ marginBottom: "8px" }}>{s.icon}</div>
+                <p style={{ fontSize: "13px", color: "#717171", marginBottom: "4px" }}>
+                  {s.label}
+                </p>
+                <p style={{ fontSize: "20px", fontWeight: 700, color: "#222222" }}>{s.value}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* TABS */}
-      <div className="sticky top-0 z-10 bg-white border-b border-neutral-200">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex gap-0 overflow-x-auto">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`shrink-0 px-5 py-4 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-neutral-500 hover:text-neutral-800"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+      {/* ── TABS ── */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          backgroundColor: "#FFFFFF",
+          borderBottom: "1px solid #DDDDDD",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1120px",
+            margin: "0 auto",
+            padding: "0 24px",
+            display: "flex",
+            overflowX: "auto",
+          }}
+        >
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                flexShrink: 0,
+                padding: "16px 20px",
+                fontSize: "14px",
+                fontWeight: 600,
+                border: "none",
+                backgroundColor: "transparent",
+                cursor: "pointer",
+                borderBottom: activeTab === tab ? "2px solid #FF385C" : "2px solid transparent",
+                color: activeTab === tab ? "#FF385C" : "#717171",
+                transition: "color 0.2s ease",
+              }}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* TAB CONTENT */}
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
-
-        {/* ---- OVERVIEW ---- */}
+      {/* ── TAB CONTENT ── */}
+      <div
+        style={{
+          maxWidth: "1120px",
+          margin: "0 auto",
+          padding: "48px 24px",
+        }}
+      >
+        {/* ─── OVERVIEW ─── */}
         {activeTab === "Overview" && (
-          <div className="grid gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-6">
-              <div>
-                <h2 className="text-xl font-semibold mb-3">About</h2>
-                <p className="text-sm leading-7 text-neutral-600">
-                  {college.name} is one of India&apos;s premier {college.stream.toLowerCase()} institutions,
-                  located in {college.city}. Established as a {college.type.toLowerCase()} institution,
-                  it consistently ranks among the top colleges in the country with a NIRF rank of #{college.nirf}.
-                  The institute offers world-class infrastructure, research facilities, and strong
-                  industry connections that translate into excellent placement outcomes for graduates.
-                </p>
-              </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "32px",
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "minmax(0,2fr) minmax(0,1fr)",
+                gap: "32px",
+                alignItems: "start",
+              }}
+              className="overview-grid"
+            >
+              {/* Left */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+                {/* About */}
+                <div>
+                  <h2
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 700,
+                      color: "#222222",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    About
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: "15px",
+                      lineHeight: "1.75",
+                      color: "#717171",
+                    }}
+                  >
+                    {college.name} is one of India&apos;s premier{" "}
+                    {college.stream.toLowerCase()} institutions, located in {college.city}.
+                    Established as a {college.type.toLowerCase()} institution, it consistently
+                    ranks among the top colleges in the country with a NIRF rank of #
+                    {college.nirf}. The institute offers world-class infrastructure, research
+                    facilities, and strong industry connections that translate into excellent
+                    placement outcomes for graduates.
+                  </p>
+                </div>
 
-              <div>
-                <h2 className="text-xl font-semibold mb-3">Highlights</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    `NIRF Rank #${college.nirf} nationally`,
-                    `Avg placement ₹${college.placement} LPA`,
-                    `${college.type} institution`,
-                    `Located in ${college.city}`,
-                    "NAAC A++ Accredited",
-                    `Annual fees ${formatFees(college.fees)}`,
-                  ].map((h) => (
-                    <div
-                      key={h}
-                      className="flex items-start gap-2 text-sm text-neutral-700"
-                    >
-                      <span className="mt-0.5 text-blue-600">✓</span>
-                      {h}
-                    </div>
-                  ))}
+                {/* Highlights */}
+                <div>
+                  <h2
+                    style={{
+                      fontSize: "22px",
+                      fontWeight: 700,
+                      color: "#222222",
+                      marginBottom: "16px",
+                    }}
+                  >
+                    Highlights
+                  </h2>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "12px",
+                    }}
+                  >
+                    {[
+                      `NIRF Rank #${college.nirf} nationally`,
+                      `Avg placement ₹${college.placement} LPA`,
+                      `${college.type} institution`,
+                      `Located in ${college.city}`,
+                      "NAAC A++ Accredited",
+                      `Annual fees ${formatFees(college.fees)}`,
+                    ].map((h) => (
+                      <div
+                        key={h}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "10px",
+                          fontSize: "14px",
+                          color: "#222222",
+                          padding: "14px 16px",
+                          borderRadius: "12px",
+                          border: "1px solid #DDDDDD",
+                          backgroundColor: "#FFFFFF",
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                        }}
+                      >
+                        <CheckCircle2 size={16} color="#FF385C" style={{ flexShrink: 0, marginTop: "1px" }} />
+                        {h}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <AdmissionPredictor
-                stream={college.stream}
-                collegeName={college.name}
-              />
+              {/* Right: predictor */}
+              <AdmissionPredictor stream={college.stream} collegeName={college.name} />
             </div>
           </div>
         )}
 
-        {/* ---- COURSES & FEES ---- */}
+        {/* ─── COURSES & FEES ─── */}
         {activeTab === "Courses & Fees" && (
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "32px",
+            }}
+          >
+            {/* Courses */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Courses Offered</h2>
-              <div className="space-y-2">
+              <h2
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#222222",
+                  marginBottom: "16px",
+                }}
+              >
+                Courses Offered
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {courses.map((course) => (
                   <div
                     key={course}
-                    className="flex items-center justify-between rounded-xl border border-neutral-200 px-4 py-3"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      borderRadius: "12px",
+                      border: "1px solid #DDDDDD",
+                      padding: "14px 18px",
+                      backgroundColor: "#FFFFFF",
+                      transition: "box-shadow 0.2s ease",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                    }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLElement).style.boxShadow =
+                        "0 6px 16px rgba(0,0,0,0.10)")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLElement).style.boxShadow =
+                        "0 1px 4px rgba(0,0,0,0.04)")
+                    }
                   >
-                    <span className="text-sm text-neutral-800">{course}</span>
-                    <span className="text-xs text-neutral-400">
+                    <span style={{ fontSize: "15px", color: "#222222", fontWeight: 500 }}>
+                      {course}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        color: "#FF385C",
+                        fontWeight: 600,
+                        backgroundColor: "#FFF1F2",
+                        padding: "3px 10px",
+                        borderRadius: "100px",
+                      }}
+                    >
                       {formatFees(college.fees)} / yr
                     </span>
                   </div>
@@ -480,28 +877,85 @@ export default function CollegeDetailPage() {
               </div>
             </div>
 
+            {/* Fee Breakdown */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Fee Breakdown</h2>
-              <div className="space-y-3">
+              <h2
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#222222",
+                  marginBottom: "16px",
+                }}
+              >
+                Fee Breakdown
+              </h2>
+              <div
+                style={{
+                  borderRadius: "16px",
+                  border: "1px solid #DDDDDD",
+                  padding: "24px",
+                  backgroundColor: "#FFFFFF",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "20px",
+                }}
+              >
                 {feesBreakdown.map((f) => (
                   <div key={f.label}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm text-neutral-700">{f.label}</span>
-                      <span className="text-sm font-medium">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <span style={{ fontSize: "14px", color: "#717171" }}>{f.label}</span>
+                      <span style={{ fontSize: "14px", fontWeight: 600, color: "#222222" }}>
                         {formatFees(Math.round(college.fees * f.amount))}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-neutral-100">
+                    <div
+                      style={{
+                        height: "8px",
+                        borderRadius: "100px",
+                        backgroundColor: "#F7F7F7",
+                        overflow: "hidden",
+                      }}
+                    >
                       <div
-                        className="h-2 rounded-full bg-blue-600"
-                        style={{ width: `${f.amount * 100}%` }}
+                        style={{
+                          height: "100%",
+                          borderRadius: "100px",
+                          width: `${f.amount * 100}%`,
+                          backgroundColor: "#FF385C",
+                        }}
                       />
                     </div>
                   </div>
                 ))}
-                <div className="mt-4 rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-3 flex justify-between">
-                  <span className="text-sm font-medium text-neutral-700">Total Annual</span>
-                  <span className="text-sm font-bold text-neutral-900">
+
+                {/* Total */}
+                <div
+                  style={{
+                    marginTop: "4px",
+                    borderTop: "1px solid #DDDDDD",
+                    paddingTop: "16px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span style={{ fontSize: "15px", fontWeight: 600, color: "#222222" }}>
+                    Total Annual
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      color: "#FF385C",
+                    }}
+                  >
                     {formatFees(college.fees)}
                   </span>
                 </div>
@@ -510,89 +964,155 @@ export default function CollegeDetailPage() {
           </div>
         )}
 
-        {/* ---- PLACEMENTS ---- */}
+        {/* ─── PLACEMENTS ─── */}
         {activeTab === "Placements" && (
-          <div className="space-y-10">
-
-            {/* Avg package bar chart */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+            {/* Bar chart */}
             <div>
-              <h2 className="text-xl font-semibold mb-6">Average Package by Year</h2>
-              <div className="h-64">
+              <h2
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#222222",
+                  marginBottom: "24px",
+                }}
+              >
+                Average Package by Year
+              </h2>
+              <div
+                style={{
+                  borderRadius: "16px",
+                  border: "1px solid #DDDDDD",
+                  padding: "24px",
+                  backgroundColor: "#FFFFFF",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                  height: "280px",
+                }}
+              >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={yoy} barSize={36}>
+                  <BarChart data={yoy} barSize={40}>
                     <XAxis
                       dataKey="year"
-                      tick={{ fontSize: 12, fill: "#6b7280" }}
+                      tick={{ fontSize: 13, fill: "#717171" }}
                       axisLine={false}
                       tickLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 12, fill: "#6b7280" }}
+                      tick={{ fontSize: 13, fill: "#717171" }}
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(v) => `₹${v}L`}
                     />
                     <Tooltip
-                      formatter={(v: number) => [`₹${v} LPA`, "Avg Package"]}
+                      formatter={(v) => [`₹${Number(v)} LPA`, "Avg Package"]}
                       contentStyle={{
                         borderRadius: "12px",
-                        border: "1px solid #e5e7eb",
+                        border: "1px solid #DDDDDD",
                         fontSize: "13px",
+                        boxShadow: "0 6px 16px rgba(0,0,0,0.10)",
                       }}
                     />
-                    <Bar dataKey="avg" fill="#006AFF" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="avg" fill="#FF385C" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* YoY trend line */}
+            {/* Line chart */}
             <div>
-              <h2 className="text-xl font-semibold mb-6">Placement Trend</h2>
-              <div className="h-48">
+              <h2
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#222222",
+                  marginBottom: "24px",
+                }}
+              >
+                Placement Trend
+              </h2>
+              <div
+                style={{
+                  borderRadius: "16px",
+                  border: "1px solid #DDDDDD",
+                  padding: "24px",
+                  backgroundColor: "#FFFFFF",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                  height: "220px",
+                }}
+              >
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={yoy}>
-                    <CartesianGrid stroke="#f0f0f0" strokeDasharray="4 4" />
+                    <CartesianGrid stroke="#F7F7F7" strokeDasharray="4 4" />
                     <XAxis
                       dataKey="year"
-                      tick={{ fontSize: 12, fill: "#6b7280" }}
+                      tick={{ fontSize: 13, fill: "#717171" }}
                       axisLine={false}
                       tickLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 12, fill: "#6b7280" }}
+                      tick={{ fontSize: 13, fill: "#717171" }}
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(v) => `₹${v}L`}
                     />
                     <Tooltip
-                      formatter={(v: number) => [`₹${v} LPA`, "Avg Package"]}
+                      formatter={(v) => [`₹${Number(v)} LPA`, "Avg Package"]}
                       contentStyle={{
                         borderRadius: "12px",
-                        border: "1px solid #e5e7eb",
+                        border: "1px solid #DDDDDD",
                         fontSize: "13px",
+                        boxShadow: "0 6px 16px rgba(0,0,0,0.10)",
                       }}
                     />
                     <Line
                       type="monotone"
                       dataKey="avg"
-                      stroke="#006AFF"
+                      stroke="#FF385C"
                       strokeWidth={2.5}
-                      dot={{ fill: "#006AFF", r: 4 }}
+                      dot={{ fill: "#FF385C", r: 5, strokeWidth: 0 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Top recruiters */}
+            {/* Recruiters */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Top Recruiters</h2>
-              <div className="flex flex-wrap gap-3">
+              <h2
+                style={{
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "#222222",
+                  marginBottom: "16px",
+                }}
+              >
+                Top Recruiters
+              </h2>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
                 {recruiters.map((r) => (
                   <span
                     key={r}
-                    className="rounded-full border border-neutral-200 px-4 py-2 text-sm text-neutral-700"
+                    style={{
+                      borderRadius: "100px",
+                      border: "1px solid #DDDDDD",
+                      padding: "10px 20px",
+                      fontSize: "14px",
+                      color: "#222222",
+                      fontWeight: 500,
+                      backgroundColor: "#FFFFFF",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "#FF385C";
+                      (e.currentTarget as HTMLElement).style.color = "#FF385C";
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "#FFF1F2";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "#DDDDDD";
+                      (e.currentTarget as HTMLElement).style.color = "#222222";
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "#FFFFFF";
+                    }}
                   >
                     {r}
                   </span>
@@ -602,13 +1122,31 @@ export default function CollegeDetailPage() {
           </div>
         )}
 
-        {/* ---- ADMISSION ---- */}
+        {/* ─── ADMISSION ─── */}
         {activeTab === "Admission" && (
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div className="space-y-6">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "32px",
+              alignItems: "start",
+            }}
+          >
+            {/* Steps + dates */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+              {/* How to apply */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">How to Apply</h2>
-                <ol className="space-y-4">
+                <h2
+                  style={{
+                    fontSize: "22px",
+                    fontWeight: 700,
+                    color: "#222222",
+                    marginBottom: "20px",
+                  }}
+                >
+                  How to Apply
+                </h2>
+                <ol style={{ display: "flex", flexDirection: "column", gap: "16px", padding: 0, margin: 0, listStyle: "none" }}>
                   {[
                     `Appear for ${EXAM_BY_STREAM[college.stream] ?? "entrance exam"} and get your scorecard.`,
                     "Register on the official college portal with valid ID and marksheets.",
@@ -617,8 +1155,33 @@ export default function CollegeDetailPage() {
                     "Track your application status on the portal.",
                     "Attend counselling/interview if shortlisted.",
                   ].map((step, i) => (
-                    <li key={i} className="flex gap-4 text-sm text-neutral-700 leading-6">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold flex items-center justify-center mt-0.5">
+                    <li
+                      key={i}
+                      style={{
+                        display: "flex",
+                        gap: "14px",
+                        fontSize: "15px",
+                        color: "#717171",
+                        lineHeight: 1.6,
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <span
+                        style={{
+                          flexShrink: 0,
+                          width: "26px",
+                          height: "26px",
+                          borderRadius: "50%",
+                          backgroundColor: "#FFF1F2",
+                          color: "#FF385C",
+                          fontSize: "13px",
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginTop: "1px",
+                        }}
+                      >
                         {i + 1}
                       </span>
                       {step}
@@ -627,8 +1190,26 @@ export default function CollegeDetailPage() {
                 </ol>
               </div>
 
-              <div className="rounded-2xl border border-neutral-200 px-5 py-4">
-                <p className="text-sm font-medium text-neutral-700 mb-3">Key Dates (2025)</p>
+              {/* Key dates */}
+              <div
+                style={{
+                  borderRadius: "16px",
+                  border: "1px solid #DDDDDD",
+                  padding: "24px",
+                  backgroundColor: "#FFFFFF",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    color: "#222222",
+                    marginBottom: "16px",
+                  }}
+                >
+                  Key Dates (2025)
+                </p>
                 {[
                   { label: "Application Start", value: "Jan 15, 2025" },
                   { label: "Application Deadline", value: "Mar 31, 2025" },
@@ -638,24 +1219,43 @@ export default function CollegeDetailPage() {
                 ].map((d) => (
                   <div
                     key={d.label}
-                    className="flex justify-between py-2 border-b border-neutral-100 last:border-0"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "12px 0",
+                      borderBottom: "1px solid #F7F7F7",
+                    }}
                   >
-                    <span className="text-sm text-neutral-500">{d.label}</span>
-                    <span className="text-sm font-medium text-neutral-800">{d.value}</span>
+                    <span style={{ fontSize: "14px", color: "#717171" }}>{d.label}</span>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "#222222",
+                      }}
+                    >
+                      {d.value}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div>
-              <AdmissionPredictor
-                stream={college.stream}
-                collegeName={college.name}
-              />
-            </div>
+            {/* Predictor */}
+            <AdmissionPredictor stream={college.stream} collegeName={college.name} />
           </div>
         )}
       </div>
+
+      {/* ── RESPONSIVE STYLE ── */}
+      <style>{`
+        @media (max-width: 768px) {
+          .overview-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }

@@ -1,26 +1,172 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors */
+  --brand-red: #FF385C;
+  --brand-red-hover: #E31C5F;
+  --brand-red-tint: #FFF1F2;
+
+  /* Neutrals */
+  --text-primary: #222222;
+  --text-secondary: #717171;
+  --border-light: #DDDDDD;
+  --background: #FFFFFF;
+  --background-soft: #F7F7F7;
+  --foreground: #222222;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+
+  /* Expose brand tokens to Tailwind */
+  --color-brand: #FF385C;
+  --color-brand-hover: #E31C5F;
+  --color-brand-tint: #FFF1F2;
+  --color-text-primary: #222222;
+  --color-text-secondary: #717171;
+  --color-border: #DDDDDD;
+  --color-soft: #F7F7F7;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Remove dark mode auto-switch — CollegeHunt is light-only */
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar (subtle, Airbnb-style) ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 999px;
+}
+
+/* ── Global transition default ── */
+*, *::before, *::after {
+  transition-timing-function: ease;
+  transition-duration: 0.2s;
+}
+
+/* ── Focus ring — brand red ── */
+:focus-visible {
+  outline: 2px solid var(--brand-red);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Utility classes usable anywhere ── */
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--brand-red);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover {
+  background-color: var(--brand-red-hover);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 11px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+.btn-secondary:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+/* Cards */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+}
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.14);
+  transform: translateY(-2px);
+}
+
+/* Inputs */
+.input-base {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--text-primary);
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-base:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px rgba(255,56,92,0.12);
+}
+.input-base::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Badge */
+.badge-nirf {
+  background: var(--brand-red-tint);
+  color: var(--brand-red);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Section headings */
+.section-heading {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
 }
